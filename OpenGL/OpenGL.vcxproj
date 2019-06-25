@@ -127,7 +127,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\glad.c" />
-    <ClCompile Include="12.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\onetriangle.txt" />
