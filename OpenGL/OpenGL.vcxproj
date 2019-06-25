@@ -129,6 +129,10 @@
     <ClCompile Include="..\glad.c" />
     <ClCompile Include="12.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\onetriangle.txt" />
+    <Text Include="..\twotriangles.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
