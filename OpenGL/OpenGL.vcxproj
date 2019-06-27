@@ -132,6 +132,8 @@
   <ItemGroup>
     <Text Include="..\onetriangle.txt" />
     <Text Include="..\twotriangles.txt" />
+    <Text Include="changecolor.txt" />
+    <Text Include="colorful.txt" />
     <Text Include="twocolors.txt" />
     <Text Include="twoVBO.txt" />
   </ItemGroup>
