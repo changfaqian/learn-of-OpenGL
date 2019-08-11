@@ -2,9 +2,6 @@
 #include"GLFW/glfw3.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include"stb_image.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include"iostream"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -15,10 +12,9 @@ const char *vertexShaderSource = "#version 330 core\n"
 "layout(location=2) in vec2 aTexcoord;\n"
 "out vec3 ourColor;\n"
 "out vec2 ourTexcoord;\n"
-"uniform mat4 transform;\n"
 "void main()\n"
 "{\n"
-"	gl_Position = transform*vec4(aPos, 1.0);\n"
+"	gl_Position = vec4(aPos, 1.0);\n"
 "	ourColor = aColor;\n"
 "	ourTexcoord = aTexcoord;\n"
 "}\0";
@@ -27,11 +23,10 @@ const char *fragmentshadersource = "#version 330 core\n"
 "out vec4 FragColor;\n"
 "in vec3 ourColor;\n"
 "in vec2 ourTexcoord;\n"
-"uniform sampler2D ourTexture1;\n"
-"uniform sampler2D ourTexture2;\n"
+"uniform sampler2D ourTexture;\n"
 "void main()\n"
 "{\n"
-"	FragColor= mix(texture(ourTexture1, ourTexcoord), texture(ourTexture2, vec2(1.0 - ourTexcoord.x, ourTexcoord.y)), 0.2);\n"
+"	FragColor=texture(ourTexture,ourTexcoord)\n"
 "}\0";
 
 const unsigned int SCR_WIDTH = 800;
@@ -108,12 +103,10 @@ int main()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
-
-	stbi_set_flip_vertically_on_load(true);
-	unsigned int texture1,texture2;
-	glGenTextures(1, &texture1);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -129,57 +122,15 @@ int main()
 		std::cout << "Failed to load texture" << std::endl;
 	}
 	stbi_image_free(data);
-
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	data = stbi_load("C:/Users/lianxiang/Desktop/awesomeface.png", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data);
-	glUseProgram(shaderprogram);
-	glUniform1i(glGetUniformLocation(shaderprogram, "ourTexture1"), 0);
-	glUniform1i(glGetUniformLocation(shaderprogram, "ourTexture2"), 1);
-
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
-
-		glm::mat4 transform = glm::mat4(1.0f);
-		transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
-		transform = glm::rotate(transform,(float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glUseProgram(shaderprogram);
-		unsigned int transformLoc = glGetUniformLocation(shaderprogram, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		transform = glm::mat4(1.0f); // reset it to identity matrix
-		transform = glm::translate(transform, glm::vec3(-0.5f, 0.5f, 0.0f));
-		float scaleAmount = sin(glfwGetTime());
-		transform = glm::scale(transform, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, &transform[0][0]);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}

@@ -41,5 +41,14 @@
     <Text Include="colorful.txt">
       <Filter>资源文件</Filter>
     </Text>
+    <Text Include="twotriangle.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="Text.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="Text1.txt">
+      <Filter>资源文件</Filter>
+    </Text>
   </ItemGroup>
 </Project>
